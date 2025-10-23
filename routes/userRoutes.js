@@ -7,6 +7,7 @@ const {
   deleteUser,
   updateMe,
   deleteMe,
+  getMe,
 } = require("../controllers/userController");
 
 const {
@@ -16,6 +17,7 @@ const {
   resetPassword,
   updatePassword,
   protect,
+  restrictTo,
 } = require("../controllers/authController");
 
 const router = express.Router();
@@ -25,10 +27,18 @@ router.post("/login", login);
 
 router.post("/forgotPassword", forgotPassword);
 router.patch("/resetPassword/:token", resetPassword);
-router.patch("/updateMyPassword", protect, updatePassword);
 
-router.patch("/updateMe", protect, updateMe);
-router.delete("/deleteMe", protect, deleteMe);
+// Adding a "protect" middleware to the router, before all the routes that require authentication:
+router.use(protect);
+
+router.patch("/updateMyPassword", updatePassword);
+router.get("/me", getMe, getUser);
+
+router.patch("/updateMe", updateMe);
+router.delete("/deleteMe", deleteMe);
+
+// Adding an "authorization" middleware to the router, before all the routes with role-based access:
+router.use(restrictTo("admin"));
 
 router.route("/").get(getAllUsers).post(createUser);
 router.route("/:id").get(getUser).patch(updateUser).delete(deleteUser);
