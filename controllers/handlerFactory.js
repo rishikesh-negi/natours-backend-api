@@ -107,6 +107,10 @@ exports.getAll = function (Model) {
       .sort()
       .limitFields()
       .paginate();
+
+    // The .explain() method provides statistics about the query:
+    // const docs = await features.query.explain();
+
     const docs = await features.query;
 
     // Send response:
