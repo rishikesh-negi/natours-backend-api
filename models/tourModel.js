@@ -37,6 +37,7 @@ const tourSchema = new mongoose.Schema(
       default: 4.5,
       min: [1, "Rating must be greater than 0"],
       max: [5, "Rating cannot be greater than 5.0"],
+      set: (val) => val.toFixed(1),
     },
     ratingsQuantity: {
       type: Number,

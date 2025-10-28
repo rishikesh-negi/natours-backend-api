@@ -41,6 +41,9 @@ const reviewSchema = new mongoose.Schema(
   },
 );
 
+// Creating a unique compound index to prevent a user from reviewing the same tour twice:
+reviewSchema.index({ tour: 1, author: 1 }, { unique: true });
+
 reviewSchema.pre(/^find/, function (next) {
   // this.populate({
   //   path: "author",
@@ -63,6 +66,8 @@ reviewSchema.statics.calcAverageRating = async function (tourId) {
   const stats = await this.aggregate([
     {
       $match: { tour: tourId },
+    },
+    {
       $group: {
         _id: "$tour",
         nRating: { $sum: 1 },
@@ -89,6 +94,7 @@ reviewSchema.post("save", function () {
 reviewSchema.pre(/^findOneAnd/, async function (next) {
   // In a "pre" middleware, "this" points to the query, not to the document. So, to get the current document, we can call the findOne() method on the query. Additionally, to pass the document into a "post" middleware for recalculation of the stats, after the document or its updates have been saved, we can attach it to the query by creating a property on the query:
   this.reviewDoc = await this.findOne(); // The reviewDoc property can now be used in a "post" middleware to access the document and its data
+  if (!this.reviewDoc) delete this.reviewDoc;
 
   next();
 });
@@ -96,6 +102,7 @@ reviewSchema.pre(/^findOneAnd/, async function (next) {
 
 reviewSchema.post(/^findOneAnd/, async function () {
   // In a "post" middleware, "this" still points to the query. However, by the time the query reaches a "post" middleware, it is already executed. So, we could not use the .findOne() method on it to get the document, like we did in the above "pre" query middleware:
+  if (!this.reviewDoc) return;
   await this.reviewDoc.constructor.calcAverageRating(this.reviewDoc.tour);
 });
 

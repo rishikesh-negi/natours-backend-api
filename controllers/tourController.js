@@ -1,4 +1,5 @@
 const Tour = require("../models/tourModel");
+const AppError = require("../utils/appError");
 
 const catchAsync = require("../utils/catchAsync");
 
@@ -106,6 +107,25 @@ exports.getMonthlyPlan = catchAsync(async function (req, res) {
     status: "success",
     data: {
       plan,
+    },
+  });
+});
+
+exports.getToursWithin = catchAsync(async function (req, res, next) {
+  const { distance, latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(",");
+
+  if (!lat || !lng)
+    next(
+      new AppError("Please provide the coordinates in the format lat,lng", 400),
+    );
+
+  const tours = await Tour.find({ startLocation: { $geoWithin: {} } });
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      data: tours,
     },
   });
 });
