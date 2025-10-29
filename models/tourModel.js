@@ -82,7 +82,7 @@ const tourSchema = new mongoose.Schema(
       default: false,
     },
     startLocation: {
-      // MongoDB supports GeoJSON data format for geospatial data:
+      // GeoJSON data format in MongoDB for geospatial data:
       type: {
         type: String,
         default: "Point",
@@ -122,9 +122,10 @@ const tourSchema = new mongoose.Schema(
 // // Single-Field Index:
 // tourSchema.index({ price: 1 });
 tourSchema.index({ slug: 1 });
-
 // Compound Index:
 tourSchema.index({ price: 1, ratingsAverage: -1 });
+// Indexing Geospatial Fields:
+tourSchema.index({ startLocation: "2dsphere" });
 
 tourSchema.virtual("durationWeeks").get(function () {
   return this.duration / 7;
@@ -181,16 +182,15 @@ tourSchema.post(/^find/, function (docs, next) {
   next();
 });
 
-// AGGREGATION MIDDLEWARE - Runs before/after an aggregation pipeline:
-tourSchema.pre("aggregate", function (next) {
-  this.pipeline().unshift({
-    $match: {
-      secretTour: { $ne: true },
-    },
-  });
+// AGGREGATION MIDDLEWARE - Runs before/after an aggregation pipeline.
+// NOTE: This middleware was commented out because its aggregation stage runs before the $geoNear stage, which is used in a route handler that returns the distances of all tours' starting locations from a given reference point. The $geoNear stage has to be the first stage in an aggregation pipeling for it to work:
+// tourSchema.pre("aggregate", function (next) {
+//   this.pipeline().unshift({
+//     $match: { secretTour: { $ne: true } },
+//   });
 
-  next();
-});
+//   next();
+// });
 
 const Tour = mongoose.model("Tour", tourSchema);
 

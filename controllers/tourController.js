@@ -120,12 +120,54 @@ exports.getToursWithin = catchAsync(async function (req, res, next) {
       new AppError("Please provide the coordinates in the format lat,lng", 400),
     );
 
-  const tours = await Tour.find({ startLocation: { $geoWithin: {} } });
+  // For geoJSON operations, MongoDB expects the radius in radians.
+  // Conversion to radian: distance / radius of Earth. Earth's radius: 3963.2 mi OR 6378.1 kms
+  const radius = unit === "mi" ? distance / 3963.2 : distance / 6378.1;
+
+  const tours = await Tour.find({
+    startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
+  });
+
+  res.status(200).json({
+    status: "success",
+    results: tours.length,
+    data: {
+      data: tours,
+    },
+  });
+});
+
+exports.getDistances = catchAsync(async function (req, res, next) {
+  const { latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(",");
+
+  if (!lat || !lng)
+    next(
+      new AppError("Please provide the coordinates in the format lat,lng", 400),
+    );
+
+  const multiplier = unit === "mi" ? 0.000621371 : 0.001;
+
+  const distances = await Tour.aggregate([
+    {
+      $geoNear: {
+        near: { type: "Point", coordinates: [lng * 1, lat * 1] },
+        distanceField: "distance",
+        distanceMultiplier: multiplier,
+      },
+    },
+    {
+      $project: {
+        name: 1,
+        distance: 1,
+      },
+    },
+  ]);
 
   res.status(200).json({
     status: "success",
     data: {
-      data: tours,
+      data: distances,
     },
   });
 });
