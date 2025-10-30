@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
@@ -15,7 +16,14 @@ const reviewRouter = require("./routes/reviewRoutes");
 
 const app = express();
 
+app.set("view engine", "pug");
+
+// Use the "path" module to correctly set the path relative to the root folder of the project by joining the project directory name with the /views folder. The path.join() method correctly creates a path by combining the directory name with a subfolder name, allowing us to not worry about the slashes:
+app.set("views", path.join(__dirname, "views"));
+
 // ---------------------------------- Global Middlewares:
+// Serving static files:
+app.use(express.static(path.join(__dirname, "public")));
 
 // Middleware for setting important HTTP security headers. Should ideally be first in the middleware stack:
 app.use(helmet());
@@ -60,9 +68,6 @@ app.use(
   }),
 );
 
-// Serving static files:
-app.use(express.static(`${__dirname}/public`));
-
 // Test middleware:
 app.use(function (req, res, next) {
   process.env.NODE_ENV === "development" &&
@@ -88,6 +93,12 @@ app.post("/api/v1/tours", createTour);
 app.patch("/api/v1/tours/:id", updateTour);
 app.delete("/api/v1/tours/:id", deleteTour);
 */
+
+// Views (pug template) routes for rendering views:
+app.get("/", (req, res, next) => {
+  // The .render() method of the response object is used to render the specified pug template. Express will look for the specified pug temaplate in the path specified for the "views" folder:
+  res.status(200).render("base");
+});
 
 // Mounting routers on the corresponding URIs:
 app.use("/api/v1/tours", tourRouter);
