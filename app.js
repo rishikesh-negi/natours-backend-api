@@ -28,7 +28,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // Middleware for setting important HTTP security headers. Should ideally be first in the middleware stack:
 app.use(helmet());
 
-// Development logging:
+// Development logging middleware:
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
@@ -36,13 +36,13 @@ if (process.env.NODE_ENV === "development") {
 // Middleware for rate limiting:
 const limiter = rateLimit({
   max: 100,
-  windowMs: 60 * 60 * 1000,
+  windowMs: 60 * 60 * 1000, // Time window within which only "max" requests will be processed
   message:
     "Too many requests from your IP address. Please try again in an hour.",
 });
 app.use("/api", limiter);
 
-// Body parser. Reads data from the body into req.body. The "limit" options is used for specifying the maximum amount of data that can be put into a req/res body:
+// Body parser. Parses the application/json JSON payload from the request body. The "limit" option is used for specifying the maximum amount of data that can be put into a req/res body:
 app.use(express.json({ limit: "10kb" }));
 
 // Data Sanitization against NoSQL query injections:
@@ -97,7 +97,10 @@ app.delete("/api/v1/tours/:id", deleteTour);
 // Views (pug template) routes for rendering views:
 app.get("/", (req, res, next) => {
   // The .render() method of the response object is used to render the specified pug template. Express will look for the specified pug temaplate in the path specified for the "views" folder:
-  res.status(200).render("base");
+  res.status(200).render("base", {
+    tour: "The Forest Hiker",
+    user: "Jonas",
+  });
 });
 
 // Mounting routers on the corresponding URIs:
