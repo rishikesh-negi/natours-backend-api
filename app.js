@@ -13,6 +13,7 @@ const globalErrorHandler = require("./controllers/errorController");
 const tourRouter = require("./routes/tourRoutes");
 const userRouter = require("./routes/userRoutes");
 const reviewRouter = require("./routes/reviewRoutes");
+const viewRouter = require("./routes/viewRoutes");
 
 const app = express();
 
@@ -94,16 +95,8 @@ app.patch("/api/v1/tours/:id", updateTour);
 app.delete("/api/v1/tours/:id", deleteTour);
 */
 
-// Views (pug template) routes for rendering views:
-app.get("/", (req, res, next) => {
-  // The .render() method of the response object is used to render the specified pug template. Express will look for the specified pug temaplate in the path specified for the "views" folder:
-  res.status(200).render("base", {
-    tour: "The Forest Hiker",
-    user: "Jonas",
-  });
-});
-
 // Mounting routers on the corresponding URIs:
+app.use("/", viewRouter); // Views router mounted on the root URL
 app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/reviews", reviewRouter);
