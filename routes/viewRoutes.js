@@ -9,6 +9,6 @@ const router = express.Router();
 
 // Views (pug template) routes for rendering views:
 router.get("/", getOverview);
-router.get("/tour", getTourDetails);
+router.get("/tour/:slug", getTourDetails);
 
 module.exports = router;
