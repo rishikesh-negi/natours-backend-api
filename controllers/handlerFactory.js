@@ -118,7 +118,7 @@ exports.getAll = function (Model) {
       status: "success",
       results: docs.length,
       data: {
-        [`${resourceName}`]: docs,
+        [resourceName]: docs,
       },
     });
   });
