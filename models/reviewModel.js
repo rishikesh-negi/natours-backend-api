@@ -90,9 +90,9 @@ reviewSchema.post("save", function () {
   this.constructor.calcAverageRating(this.tour);
 });
 
-// In query middlewares like findByIdAndUpdate and findByIdAndDelete, we don't get direct access to the current document. So, we can use a workaround to access the current document in order to update the stats of the main data set when the related data set is updated using the mentioned queries:
+// In query middlewares like findByIdAndUpdate and findByIdAndDelete, we don't get direct access to the current document. So, we can use a workaround to access the current document in order to update the stats of the main data set when the related data set is updated using the aforementioned queries:
 reviewSchema.pre(/^findOneAnd/, async function (next) {
-  // In a "pre" middleware, "this" points to the query, not to the document. So, to get the current document, we can call the findOne() method on the query. Additionally, to pass the document into a "post" middleware for recalculation of the stats, after the document or its updates have been saved, we can attach it to the query by creating a property on the query:
+  // In a "pre" middleware, "this" points to the query, not to the document. So, to get the current document, we can call the findOne() method on the query. Additionally, to pass the document into a "post" middleware for recalculation of the stats after the document or its updates have been saved, we can attach it to the query by creating a property on the query:
   this.reviewDoc = await this.findOne(); // The reviewDoc property can now be used in a "post" middleware to access the document and its data
   if (!this.reviewDoc) delete this.reviewDoc;
 
