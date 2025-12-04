@@ -29,6 +29,22 @@ app.use(express.static(path.join(__dirname, "public")));
 // Middleware for setting important HTTP security headers. Should ideally be first in the middleware stack:
 app.use(helmet());
 
+const scriptSrcUrls = ["https://unpkg.com/", "https://tile.openstreetmap.org"];
+const connectSrcUrls = ["https://unpkg.com", "https://tile.openstreetmap.org"];
+const fontSrcUrls = ["fonts.googleapis.com", "fonts.gstatic.com"];
+
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: [],
+      connectSrc: ["'self'", ...connectSrcUrls],
+      scriptSrc: ["'self'", ...scriptSrcUrls],
+      imgSrc: ["'self'", "blob:", "data:", "https:"],
+      fontSrc: ["'self'", ...fontSrcUrls],
+    },
+  }),
+);
+
 // Development logging middleware:
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
