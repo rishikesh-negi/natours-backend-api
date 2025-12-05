@@ -17,7 +17,7 @@ exports.getOverview = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getTourDetails = catchAsync(async (req, res) => {
+exports.getTourDetails = catchAsync(async (req, res, next) => {
   const tour = await Tour.findOne({ slug: req.params.slug }).populate({
     path: "reviews",
     fields: "review rating author",
@@ -28,3 +28,9 @@ exports.getTourDetails = catchAsync(async (req, res) => {
     tour,
   });
 });
+
+exports.getLoginPage = (req, res) => {
+  res.status(200).render("login", {
+    title: "Log into Natours",
+  });
+};
