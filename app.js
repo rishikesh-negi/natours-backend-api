@@ -6,6 +6,7 @@ const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean"); // Deprecated. Use express-xss-sanitizer instead
 const hpp = require("hpp");
+const cookieParser = require("cookie-parser");
 
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
@@ -29,18 +30,24 @@ app.use(express.static(path.join(__dirname, "public")));
 // Middleware for setting important HTTP security headers. Should ideally be first in the middleware stack:
 app.use(helmet());
 
-const scriptSrcUrls = ["https://unpkg.com/", "https://tile.openstreetmap.org"];
 const connectSrcUrls = ["https://unpkg.com", "https://tile.openstreetmap.org"];
-const fontSrcUrls = ["fonts.googleapis.com", "fonts.gstatic.com"];
 
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
-      defaultSrc: [],
-      connectSrc: ["'self'", ...connectSrcUrls],
-      scriptSrc: ["'self'", ...scriptSrcUrls],
+      defaultSrc: ["'self'", "http://127.0.0.1:8000/*"],
+      baseUri: ["'self'"],
+      fontSrc: ["'self'", "https:", "data:"],
+      scriptSrc: [
+        "'self'",
+        "https://unpkg.com/*",
+        "https://*.openstreetmap.org",
+        "https://*.jawg.io",
+        "https://*.stripe.com",
+        "https://unpkg.com/axios/dist/axios.min.js",
+      ],
+      connectSrc: ["'self'", "http://127.0.0.1:8000/", ...connectSrcUrls],
       imgSrc: ["'self'", "blob:", "data:", "https:"],
-      fontSrc: ["'self'", ...fontSrcUrls],
     },
   }),
 );
@@ -61,6 +68,7 @@ app.use("/api", limiter);
 
 // Body parser. Parses the application/json JSON payload from the request body. The "limit" option is used for specifying the maximum amount of data that can be put into a req/res body:
 app.use(express.json({ limit: "10kb" }));
+app.use(cookieParser()); // Parses cookie data
 
 // Data Sanitization against NoSQL query injections:
 app.use(mongoSanitize());
@@ -88,7 +96,8 @@ app.use(
 // Test middleware:
 app.use(function (req, res, next) {
   process.env.NODE_ENV === "development" &&
-    console.log("This is the first middleware in the stack...");
+    // console.log("This is the first middleware in the stack...");
+    console.log(req.cookies);
 
   // The following uncaught exception will be encountered only when a request is received because that's when the middleware will run:
   // console.log(x);
