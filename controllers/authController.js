@@ -75,6 +75,8 @@ exports.protect = catchAsync(async function (req, res, next) {
     req.headers.authorization.startsWith("Bearer")
   ) {
     token = req.headers.authorization.split(" ").at(1);
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
 
   if (!token)
@@ -110,6 +112,36 @@ exports.protect = catchAsync(async function (req, res, next) {
 
   // If all the above checks succeed, add the user data to the request and grant the user access to the protected route by forwarding the request to the next middleware:
   req.user = currentUser;
+  next();
+});
+
+// Middleware only for rendered views. Checks if a user is logged in or not, for conditional rendering. Cannot encounter errors so error handling not required:
+exports.isLoggedIn = catchAsync(async function (req, res, next) {
+  const token = req.cookies.jwt;
+
+  if (token) {
+    // 1) Verify the token:
+    const decoded = await promisify(jwt.verify)(
+      token,
+      process.env.JWT_SECRET,
+    ).catch(() => false);
+
+    if (!decoded) return next();
+
+    // 2) Check if the user still exists:
+    // The user who requested the route will have his ID as the payload in the value decoded from the received JWT. If no user with that ID exists in the DB, it means that either the user was deleted, someone stole the user's JWT, or the payload of the received JWT was tampered with:
+    const currentUser = await User.findById(decoded.id).catch(() => false);
+    if (!currentUser) return next();
+
+    // 3) Check if the user changed the password after the issuance of a JWT:
+    // The User.changedPasswordAfter() method is implemented in the userModel file/module as an instance method on the User documents:
+    if (currentUser.changedPasswordAfter(decoded.iat)) return next();
+
+    // If all the above checks succeed, the user is logged in. Make the user accessible to the templates and conditionally render the views accordingly:
+    res.locals.user = currentUser;
+    return next();
+  }
+
   next();
 });
 
