@@ -6,7 +6,11 @@ const {
   getLoginPage,
 } = require("../controllers/viewController");
 
+const { isLoggedIn } = require("../controllers/authController");
+
 const router = express.Router();
+
+router.use(isLoggedIn);
 
 // Views (pug template) routes for rendering views:
 router.get("/", getOverview);
