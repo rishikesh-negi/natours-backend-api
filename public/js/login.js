@@ -1,6 +1,9 @@
 /* eslint-disable */
+import "@babel/polyfill";
+import axios from "axios";
+import { showAlert } from "./alerts";
 
-const login = async function (email, password) {
+export const login = async function (email, password) {
   try {
     const res = await axios({
       method: "POST",
@@ -11,17 +14,11 @@ const login = async function (email, password) {
       },
     });
 
-    console.log(res);
+    if (res.data.status === "success") {
+      showAlert("success", "Login successful!");
+      window.location.assign("/");
+    }
   } catch (err) {
-    console.log(err.response.data);
+    showAlert("error", err.response.data.message);
   }
 };
-
-document.querySelector(".form").addEventListener("submit", function (e) {
-  e.preventDefault();
-
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  login(email, password);
-});
