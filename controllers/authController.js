@@ -139,6 +139,7 @@ exports.isLoggedIn = catchAsync(async function (req, res, next) {
 
     // If all the above checks succeed, the user is logged in. Make the user accessible to the templates and conditionally render the views accordingly:
     res.locals.user = currentUser;
+    res.locals.pathname = req.path;
     return next();
   }
 
