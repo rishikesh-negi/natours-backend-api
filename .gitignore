@@ -1,3 +1,5 @@
 node_modules
 config.env
 dev-data/data
+.cache
+**/bundle.js**
