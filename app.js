@@ -30,28 +30,33 @@ app.use(express.static(path.join(__dirname, "public")));
 // Middleware for setting important HTTP security headers. Should ideally be first in the middleware stack:
 app.use(helmet());
 
-const connectSrcUrls = ["https://unpkg.com", "https://tile.openstreetmap.org"];
+const connectSrcUrls = [
+  "https://unpkg.com",
+  "https://tile.openstreetmap.org",
+  "ws://localhost:6968",
+  "ws://localhost:4932",
+];
 
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
-      defaultSrc: ["'self'", "http://127.0.0.1:8000/*"],
+      defaultSrc: [
+        "'self'",
+        "http://127.0.0.1:8000/*",
+        "http://localhost:8000/*",
+      ],
       baseUri: ["'self'"],
       fontSrc: ["'self'", "https:", "data:"],
       scriptSrc: [
         "'self'",
         "'unsafe-eval'",
-        "https://unpkg.com/**",
+        "https://unpkg.com",
         "https://*.openstreetmap.org",
         "https://*.jawg.io",
         "https://*.stripe.com",
-      ],
-      connectSrc: [
-        "'self'",
-        "http://127.0.0.1:8000/",
         "ws://localhost:6968/",
-        ...connectSrcUrls,
       ],
+      connectSrc: ["'self'", "http://127.0.0.1:8000/", ...connectSrcUrls],
       imgSrc: ["'self'", "blob:", "data:", "https:"],
     },
   }),
