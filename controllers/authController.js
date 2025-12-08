@@ -67,6 +67,13 @@ exports.login = catchAsync(async function (req, res, next) {
   createAndSendJWT(user, 200, res, false);
 });
 
+exports.logout = catchAsync(async function (req, res, next) {
+  // Send a backend-induced response to instruct the client to clear the "jwt" cookie from the browser:
+  res.clearCookie("jwt");
+
+  res.status(200).json({ status: "success" });
+});
+
 exports.protect = catchAsync(async function (req, res, next) {
   // 1) Get the token and check if it exists:
   let token;
