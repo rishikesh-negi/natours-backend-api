@@ -1,5 +1,5 @@
 node_modules
 config.env
-dev-data/data
+dev-data
 .cache
 **/bundle.js**
