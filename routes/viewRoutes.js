@@ -4,17 +4,17 @@ const {
   getOverview,
   getTourDetails,
   getLoginPage,
+  getAccount,
 } = require("../controllers/viewController");
 
-const { isLoggedIn } = require("../controllers/authController");
+const { isLoggedIn, protect } = require("../controllers/authController");
 
 const router = express.Router();
 
-router.use(isLoggedIn);
-
 // Views (pug template) routes for rendering views:
-router.get("/", getOverview);
-router.get("/login", getLoginPage);
-router.get("/tour/:slug", getTourDetails);
+router.get("/", isLoggedIn, getOverview);
+router.get("/login", isLoggedIn, getLoginPage);
+router.get("/tour/:slug", isLoggedIn, getTourDetails);
+router.get("/me", protect, getAccount);
 
 module.exports = router;
