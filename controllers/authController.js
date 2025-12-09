@@ -119,6 +119,7 @@ exports.protect = catchAsync(async function (req, res, next) {
 
   // If all the above checks succeed, add the user data to the request and grant the user access to the protected route by forwarding the request to the next middleware:
   req.user = currentUser;
+  res.locals.user = currentUser;
   next();
 });
 
