@@ -1,4 +1,5 @@
 const Tour = require("../models/tourModel");
+const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 
 exports.getOverview = catchAsync(async (req, res, next) => {
@@ -23,6 +24,8 @@ exports.getTourDetails = catchAsync(async (req, res, next) => {
     fields: "review rating author",
   });
 
+  if (!tour) return next(new AppError("No tour with that name found!", 404));
+
   res.status(200).render("tour", {
     title: tour.name,
     tour,
@@ -32,5 +35,11 @@ exports.getTourDetails = catchAsync(async (req, res, next) => {
 exports.getLoginPage = (req, res) => {
   res.status(200).render("login", {
     title: "Log into Natours",
+  });
+};
+
+exports.getAccount = (req, res) => {
+  res.status(200).render("account", {
+    title: "Your account",
   });
 };
