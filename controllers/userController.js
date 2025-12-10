@@ -32,6 +32,9 @@ exports.updateMe = catchAsync(async function (req, res, next) {
   // 2) Filter the request body to keep only the fields that are allowed to change:
   const filteredBody = filterObj(req.body, "name", "email");
 
+  if (!Object.keys(filteredBody).length)
+    return next(new AppError("No valid data to update found!", 400));
+
   // 3) Update the user document with the new data:
   const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
     new: true,
