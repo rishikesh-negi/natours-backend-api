@@ -78,6 +78,7 @@ app.use("/api", limiter);
 
 // Body parser. Parses the application/json JSON payload from the request body. The "limit" option is used for specifying the maximum amount of data that can be put into a req/res body:
 app.use(express.json({ limit: "10kb" }));
+app.use(express.urlencoded({ extended: true, limit: "10kb" })); // Parse incoming url encoded form data
 app.use(cookieParser()); // Parses cookie data
 
 // Data Sanitization against NoSQL query injections:
