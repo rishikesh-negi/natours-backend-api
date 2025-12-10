@@ -1,4 +1,5 @@
 const Tour = require("../models/tourModel");
+const User = require("../models/userModel");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 
@@ -43,3 +44,24 @@ exports.getAccount = (req, res) => {
     title: "Your account",
   });
 };
+
+exports.updateUserData = catchAsync(async (req, res, next) => {
+  const { name, email } = req.body;
+
+  if (!(name || email))
+    next(new AppError("Invalid request! Missing data", 401));
+
+  const user = await User.findById(req.user.id);
+  if (name === user.name && email === user.email) return;
+
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user.id,
+    { name, email },
+    { new: true, runValidators: true },
+  );
+
+  res.status(200).render("account", {
+    title: "Your account",
+    user: updatedUser,
+  });
+});
