@@ -154,7 +154,7 @@ app.all("*", function (req, _, next) {
   // Any argument passed into the "next()" function call is treated as an error (or error object) by Express. Express then skips all the subsequent middlewares and passes the argument straight into the global error handling middleware:
   // next(err);
 
-  // 3. Using a custom app error class to create and pass an error instance into the global error handling middleware:
+  // 3. Using a custom AppError class to create and pass an error instance into the global error handling middleware:
   next(
     new AppError(
       `The requested resource ${req.originalUrl} does not exist`,
