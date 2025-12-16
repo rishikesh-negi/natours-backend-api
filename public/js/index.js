@@ -1,12 +1,13 @@
 /* eslint-disable */
 import { displayMap } from "./mapbox";
 import { login, logout } from "./login";
-import { updateUserData } from "./updateSettings";
+import { updateSettings } from "./updateSettings";
 
 // DOM Elements:
 const mapBox = document.getElementById("map");
 const loginForm = document.querySelector(".form--login");
 const updateUserDataForm = document.querySelector(".form-user-data");
+const updateUserPasswordForm = document.querySelector(".form-user-password");
 const logoutBtn = document.querySelector(".nav__el--logout");
 
 // Form values:
@@ -35,7 +36,38 @@ if (updateUserDataForm) {
     const name = document.getElementById("name").value;
     const email = document.getElementById("email").value;
 
-    updateUserData(name, email);
+    updateSettings({ name, email }, "data");
+  });
+}
+
+if (updateUserPasswordForm) {
+  updateUserPasswordForm.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const btnSavePassword = document.querySelector(".btn--save-password");
+    btnSavePassword.textContent = "Updating...";
+    btnSavePassword.setAttribute("disabled", true);
+    btnSavePassword.style.cursor = "not-allowed";
+
+    const passwordCurrentField = document.getElementById("password-current");
+    const passwordField = document.getElementById("password");
+    const passwordConfirmField = document.getElementById("password-confirm");
+
+    const passwordCurrent = passwordCurrentField.value;
+    const password = passwordField.value;
+    const passwordConfirm = passwordConfirmField.value;
+
+    await updateSettings(
+      { passwordCurrent, password, passwordConfirm },
+      "password",
+    );
+
+    passwordCurrentField.value = "";
+    passwordField.value = "";
+    passwordConfirmField.value = "";
+    btnSavePassword.textContent = "Save password";
+    btnSavePassword.removeAttribute("disabled");
+    btnSavePassword.style.cursor = "pointer";
   });
 }
 
