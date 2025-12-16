@@ -268,6 +268,7 @@ exports.updatePassword = catchAsync(async function (req, res, next) {
   // 3) If yes, update the user document with the new password:
   user.password = req.body.password;
   user.passwordConfirm = req.body.passwordConfirm;
+  // User.findByIdAndUpdate will NOT work as expected.
   await user.save();
 
   // 4) Log the user in again by sending a new JWT:
