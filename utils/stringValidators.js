@@ -3,5 +3,9 @@ exports.emailValidator = function (val) {
 };
 
 exports.passwordValidator = function (val) {
-  return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(val);
+  // 1) For checking min 8 chars, uppercase letter, lowercase letter, number, special char:
+  // return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(val);
+
+  // 2) For checking 8 chars, letters, numbers (simpler):
+  /^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(val);
 };
