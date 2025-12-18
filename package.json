@@ -28,6 +28,7 @@
     "mongodb": "^6.17.0",
     "mongoose": "^5.13.23",
     "morgan": "^1.10.0",
+    "multer": "^2.0.2",
     "nodemailer": "^7.0.9",
     "pug": "^3.0.3",
     "slugify": "^1.6.6",
