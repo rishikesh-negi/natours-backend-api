@@ -107,8 +107,8 @@ app.use(
 // Test middleware:
 app.use(function (req, res, next) {
   process.env.NODE_ENV === "development" &&
-    // console.log("This is the first middleware in the stack...");
-    console.log(req.cookies);
+    console.log("This is the first middleware in the stack...");
+  // console.log(req.cookies);
 
   // The following uncaught exception will be encountered only when a request is received because that's when the middleware will run:
   // console.log(x);
