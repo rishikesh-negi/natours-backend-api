@@ -1,4 +1,5 @@
 const express = require("express");
+const multer = require("multer");
 const {
   getAllUsers,
   createUser,
@@ -21,6 +22,8 @@ const {
   restrictTo,
 } = require("../controllers/authController");
 
+const upload = multer({ dest: "/public/img/users" });
+
 const router = express.Router();
 
 router.post("/signup", signup);
@@ -36,7 +39,7 @@ router.use(protect);
 router.patch("/updateMyPassword", updatePassword);
 router.get("/me", getMe, getUser);
 
-router.patch("/updateMe", updateMe);
+router.patch("/updateMe", upload.single("photo"), updateMe);
 router.delete("/deleteMe", deleteMe);
 
 // Adding an "authorization" middleware to the router, before all the routes with role-based access:
