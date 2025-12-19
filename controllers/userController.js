@@ -1,8 +1,39 @@
+const multer = require("multer");
+
 const User = require("../models/userModel");
 const AppError = require("../utils/appError");
 const { deleteOne, updateOne, getOne, getAll } = require("./handlerFactory");
 
 const catchAsync = require("../utils/catchAsync");
+
+// Configuring Multer storage and filter for file uploads. The "cb" parameter in the functions below is a callback function somewhat similar to Express's "next" function:
+const multerStorage = multer.diskStorage({
+  destination(req, file, cb) {
+    // To specify the destination and on-error operation, we use the "cb" callback. The first parameter represents any possible errors.:
+    cb(null, "public/img/users");
+  },
+  filename(req, file, cb) {
+    // Get image extension from mimetype header (Ex: image/jpeg):
+    const ext = file.mimetype.split("/").at(1);
+
+    // Store file to the file system after naming it:
+    cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+  },
+});
+
+const multerFilter = function (req, file, cb) {
+  // Allow only images in the upload:
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new AppError("Only image upload is allowed!", 400), false);
+  }
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
 
 const filterObj = function (obj, ...allowedFields) {
   const filteredObj = {};
@@ -13,6 +44,8 @@ const filterObj = function (obj, ...allowedFields) {
 
   return filteredObj;
 };
+
+exports.uploadUserPhoto = upload.single("photo");
 
 exports.getMe = catchAsync(async function (req, res, next) {
   req.params.id = req.user.id;
