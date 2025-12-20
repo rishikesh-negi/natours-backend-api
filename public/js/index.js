@@ -35,8 +35,17 @@ if (updateUserDataForm) {
 
     const name = document.getElementById("name").value;
     const email = document.getElementById("email").value;
+    const photo = document.getElementById("photo").files[0];
 
-    updateSettings({ name, email }, "data");
+    const formData = new FormData();
+
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("photo", photo);
+
+    console.log(formData);
+
+    updateSettings(formData, "data");
   });
 }
 
