@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
     maxlength: [100, "You email address cannot exceed 100 characters"],
     message: "Please enter a valid email ID",
   },
-  photo: String,
+  photo: { type: String, default: "default.jpeg" },
   role: {
     type: String,
     enum: ["user", "guide", "lead-guide", "admin"],
