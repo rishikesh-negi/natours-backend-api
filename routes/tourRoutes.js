@@ -17,6 +17,8 @@ const {
   getMonthlyPlan,
   getToursWithin,
   getDistances,
+  uploadTourImages,
+  resizeTourImages,
 } = tourController;
 
 // Nesting the Review Routes Into the Tour Route:
@@ -41,7 +43,13 @@ router
 router
   .route("/:id")
   .get(getTour)
-  .patch(protect, restrictTo("admin", "lead-guide"), updateTour)
+  .patch(
+    protect,
+    restrictTo("admin", "lead-guide"),
+    uploadTourImages,
+    resizeTourImages,
+    updateTour,
+  )
   .delete(protect, restrictTo("admin", "lead-guide"), deleteTour);
 
 module.exports = router;
