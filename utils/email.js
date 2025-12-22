@@ -1,29 +1,57 @@
 const nodemailer = require("nodemailer");
+const pug = require("pug");
+const htmlToText = require("html-to-text");
 
-const sendEmail = async function (options) {
-  // NOTE: Activate the "less secure app" option in Gmail account to use Gmail with Nodemailer. Although, Gmail is not an ideal emailing service for a production app as it only allows sending 500 emails per day, and it tends to mark accounts with many daily outgoing emails as "spammer". Send Grid and Mail Gun are ideal services for use in production, with Nodemailer.
+module.exports = class Email {
+  constructor(user, url) {
+    this.to = user.email;
+    this.firstName = user.name.split(" ")[0];
+    this.url = url;
+    this.from = `Rishikesh Negi <${process.env.EMAIL_FROM}>`;
+  }
 
-  // 1) Create a transporter (the service to be used to send the email):
-  const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
-    auth: {
-      user: process.env.EMAIL_USERNAME,
-      pass: process.env.EMAIL_PASSWORD,
-    },
-  });
+  newTransport() {
+    if (process.env.NODE_ENV === "production") {
+      // Sendgrid:
+      return 1;
+    }
 
-  // 2) Define the email options:
-  const mailOptions = {
-    from: "Rishikesh Negi <hello@rishi.io>",
-    to: options.email,
-    subject: options.subject,
-    text: options.message,
-    // html: // To be implemented later
-  };
+    return nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: process.env.EMAIL_PORT,
+      auth: {
+        user: process.env.EMAIL_USERNAME,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+  }
 
-  // 3) Send the email using Nodemailer:
-  await transporter.sendMail(mailOptions);
+  // Send the actual email:
+  async send(template, subject) {
+    // 1) Render the HTML for the email using a pug template:
+    const html = pug.renderFile(
+      `${__dirname}/../views/emails/${template}.pug`,
+      {
+        firstName: this.firstName,
+        url: this.url,
+        subject,
+      },
+    );
+
+    // 2) Define the email options:
+    const mailOptions = {
+      from: this.from,
+      to: this.to,
+      subject,
+      html,
+      text: htmlToText.fromString(html),
+    };
+
+    // 3) Create a transport and send email:
+    await this.newTransport.sendMail(mailOptions);
+  }
+
+  async sendWelcome() {
+    await this.send("welcome", "Welcome to the Natours Family!");
+  }
 };
-
-module.exports = sendEmail;
