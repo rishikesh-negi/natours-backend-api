@@ -44,14 +44,21 @@ module.exports = class Email {
       to: this.to,
       subject,
       html,
-      text: htmlToText.fromString(html),
+      text: htmlToText.convert(html),
     };
 
     // 3) Create a transport and send email:
-    await this.newTransport.sendMail(mailOptions);
+    await this.newTransport().sendMail(mailOptions);
   }
 
   async sendWelcome() {
     await this.send("welcome", "Welcome to the Natours Family!");
+  }
+
+  async sendPasswordReset() {
+    await this.send(
+      "passwordReset",
+      "Your password reset token (valid for 10 minutes)",
+    );
   }
 };
