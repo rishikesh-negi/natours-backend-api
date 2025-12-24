@@ -111,7 +111,7 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
 };
 
 userSchema.methods.createPasswordResetToken = function () {
-  // NOTE: After updating the passwordResetToken and passwordResetExpires fields in this method, we are not saving the document to the DB. So, after calling this method, the document should be saved in the corresponding middleware.
+  // NOTE: After updating the passwordResetToken and passwordResetExpires fields in this method, we are not saving the document to the DB. So, after calling this method, the document should be saved in the corresponding middleware / route handler.
 
   // The reset token works like a temporary password, in a way. Its un-encrypted version should not be stored in the DB, because if a hacker obtains access to our DB, he can take control of accounts using the unencrypted reset tokens that have not yet expired:
   const resetToken = crypto.randomBytes(32).toString("hex");
