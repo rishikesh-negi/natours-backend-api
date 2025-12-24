@@ -4,16 +4,23 @@ const htmlToText = require("html-to-text");
 
 module.exports = class Email {
   constructor(user, url) {
-    this.to = user.email;
-    this.firstName = user.name.split(" ")[0];
+    this.to = user?.email;
+    this.firstName = user?.name.split(" ")[0];
     this.url = url;
-    this.from = `Rishikesh Negi <${process.env.EMAIL_FROM}>`;
+    this.from = `Natours Team <${process.env.EMAIL_FROM}>`;
   }
 
   newTransport() {
     if (process.env.NODE_ENV === "production") {
-      // TBD - Sendgrid:
-      return 1;
+      return nodemailer.createTransport({
+        service: "Brevo",
+        host: process.env.BREVO_HOST,
+        port: process.env.BREVO_PORT,
+        auth: {
+          user: process.env.BREVO_LOGIN,
+          pass: process.env.BREVO_PASSWORD,
+        },
+      });
     }
 
     return nodemailer.createTransport({
@@ -31,6 +38,7 @@ module.exports = class Email {
     // 1) Render the HTML for the email using a pug template:
     const html = pug.renderFile(
       `${__dirname}/../views/emails/${template}.pug`,
+      // Data provided to the pug template:
       {
         firstName: this.firstName,
         url: this.url,
@@ -43,8 +51,10 @@ module.exports = class Email {
       from: this.from,
       to: this.to,
       subject,
-      html,
-      text: htmlToText.convert(html),
+      html, // HTML to be rendered in the email
+      text: htmlToText.convert(html, {
+        wordwrap: false,
+      }), // Text content if HTML cannot be rendered
     };
 
     // 3) Create a transport and send email:
