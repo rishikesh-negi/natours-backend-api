@@ -2,6 +2,7 @@
 import { displayMap } from "./mapbox";
 import { login, logout } from "./login";
 import { updateSettings } from "./updateSettings";
+import { bookTour } from "./stripe";
 
 // DOM Elements:
 const mapBox = document.getElementById("map");
@@ -9,6 +10,7 @@ const loginForm = document.querySelector(".form--login");
 const updateUserDataForm = document.querySelector(".form-user-data");
 const updateUserPasswordForm = document.querySelector(".form-user-password");
 const logoutBtn = document.querySelector(".nav__el--logout");
+const bookTourBtn = document.querySelector("#book-tour");
 
 // Form values:
 let email;
@@ -81,3 +83,8 @@ if (updateUserPasswordForm) {
 }
 
 if (logoutBtn) logoutBtn.addEventListener("click", logout);
+
+if (bookTourBtn) {
+  const { tourId } = bookTourBtn.dataset;
+  bookTourBtn.addEventListener("click", bookTour.bind(null, tourId));
+}
