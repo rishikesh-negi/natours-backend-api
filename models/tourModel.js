@@ -183,7 +183,7 @@ tourSchema.post(/^find/, function (docs, next) {
 });
 
 // AGGREGATION MIDDLEWARE - Runs before/after an aggregation pipeline.
-// NOTE: This middleware was commented out because its aggregation stage runs before the $geoNear stage, which is used in a route handler that returns the distances of all tours' starting locations from a given reference point. The $geoNear stage has to be the first stage in an aggregation pipeling for it to work:
+// NOTE: This middleware was commented out because its aggregation stage runs before the $geoNear stage, used in a route handler to return the distances of all tours' starting locations from a given reference point. The $geoNear stage needs to be the first stage in an aggregation pipeling for it to work:
 // tourSchema.pre("aggregate", function (next) {
 //   this.pipeline().unshift({
 //     $match: { secretTour: { $ne: true } },
