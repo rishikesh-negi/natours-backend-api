@@ -9,11 +9,12 @@ const {
 } = require("../controllers/viewController");
 
 const { isLoggedIn, protect } = require("../controllers/authController");
+const { createBookingCheckout } = require("../controllers/bookingController");
 
 const router = express.Router();
 
 // Views (pug template) routes for rendering views:
-router.get("/", isLoggedIn, getOverview);
+router.get("/", createBookingCheckout, isLoggedIn, getOverview);
 router.get("/login", isLoggedIn, getLoginPage);
 router.get("/tour/:slug", isLoggedIn, getTourDetails);
 router.get("/me", protect, getAccount);
