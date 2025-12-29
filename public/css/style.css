@@ -298,6 +298,11 @@ body {
   outline-offset: 3px;
 }
 
+.btn--centered {
+  width: fit-content;
+  justify-self: center;
+}
+
 .header {
   background-color: #444;
   padding: 0 5rem;
@@ -542,6 +547,14 @@ body {
   position: relative;
   height: 65rem;
   margin-top: calc(0px - var(--section-rotate));
+}
+
+.no-bookings {
+  grid-column: 1 / -1;
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  gap: 4.8rem;
 }
 
 #map {
