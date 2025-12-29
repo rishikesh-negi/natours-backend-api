@@ -1,3 +1,4 @@
+const Booking = require("../models/bookingModel");
 const Tour = require("../models/tourModel");
 const User = require("../models/userModel");
 const AppError = require("../utils/appError");
@@ -44,6 +45,18 @@ exports.getAccount = (req, res) => {
     title: "Your account",
   });
 };
+
+exports.getMyBookedTours = catchAsync(async (req, res) => {
+  // We can also use virtual populate to add the booked tour's document to the booking document instead of the following implementation:
+  const bookings = await Booking.find({ user: req.user?.id });
+  const tourIDs = bookings?.map((booking) => booking.tour);
+  const tours = await Tour.find({ _id: { $in: tourIDs } });
+
+  res.status(200).render("overview", {
+    title: "Your Booked Tours",
+    tours,
+  });
+});
 
 exports.updateUserData = catchAsync(async (req, res, next) => {
   const { name, email } = req.body;
