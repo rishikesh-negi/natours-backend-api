@@ -1,8 +1,13 @@
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const catchAsync = require("../utils/catchAsync");
-const factory = require("./handlerFactory");
-const AppError = require("../utils/appError");
+const {
+  createOne,
+  getOne,
+  updateOne,
+  getAll,
+  deleteOne,
+} = require("./handlerFactory");
 
 const Tour = require("../models/tourModel");
 const Booking = require("../models/bookingModel");
@@ -59,3 +64,12 @@ exports.createBookingCheckout = catchAsync(async (req, res, next) => {
   // If there is no tour, user, or price data in the URL query, simply call the next middleware in the "/" route's middleware stack in viewRoutes to render the home page in the usual way:
   next();
 });
+
+exports.createBooking = createOne(Booking);
+exports.getBooking = getOne(Booking, [
+  { path: "user", select: "_id, name, email" },
+  { path: "tour", select: "_id, name, slug" },
+]);
+exports.updateBooking = updateOne(Booking);
+exports.getAllBookings = getAll(Booking);
+exports.deleteBooking = deleteOne(Booking);
