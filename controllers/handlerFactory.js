@@ -73,7 +73,7 @@ exports.getOne = function (Model, populateOptions = null) {
   const resourceName = getModelName(Model);
 
   return catchAsync(async function (req, res, next) {
-    const query = populateOptions
+    const query = populateOptions?.length
       ? Model.findById(req.params.id).populate(populateOptions)
       : Model.findById(req.params.id);
 
