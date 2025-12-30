@@ -16,7 +16,7 @@ exports.setTourUserIds = function (req, res, next) {
   next();
 };
 
-exports.getReview = getOne(Review, { path: "author", select: "name photo" });
+exports.getReview = getOne(Review, [{ path: "author", select: "name photo" }]);
 exports.getAllReviews = getAll(Review);
 exports.createReview = createOne(Review);
 exports.deleteReview = deleteOne(Review);
