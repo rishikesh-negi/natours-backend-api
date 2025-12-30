@@ -15,7 +15,7 @@ const {
 
 // After implementing factory handler functions:
 exports.getAllTours = getAll(Tour);
-exports.getTour = getOne(Tour, { path: "reviews" });
+exports.getTour = getOne(Tour, [{ path: "reviews" }]);
 exports.createTour = createOne(Tour);
 exports.updateTour = updateOne(Tour);
 exports.deleteTour = deleteOne(Tour);
