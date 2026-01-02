@@ -19,17 +19,10 @@ const DB = process.env.DATABASE.replace(
   encodeURIComponent(process.env.DB_PASSWORD),
 );
 
-mongoose
-  .connect(DB, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    process.env.NODE_ENV === "development" &&
-      console.log("DB connected successfully");
-  });
+mongoose.connect(DB).then(() => {
+  process.env.NODE_ENV === "development" &&
+    console.log("DB connected successfully");
+});
 
 // console.log(app.get("env"));
 // console.log(process.env);
