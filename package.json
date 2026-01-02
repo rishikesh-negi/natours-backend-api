@@ -6,7 +6,7 @@
   "author": "Rishikesh Negi",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon server.js",
+    "start": "node server.js",
     "start:prod": "cross-env NODE_ENV=production nodemon server.js",
     "debug": "ndb server.js",
     "watch:js": "parcel watch ./public/js/index.js --hmr-port 6968 --out-dir ./public/js --out-file bundle.js",
