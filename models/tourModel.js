@@ -175,12 +175,14 @@ tourSchema.pre(/^find/, function (next) {
   next();
 });
 
+/*
 // QUERY MIDDLEWARE (post find hook) - Runs after a find query is executed:
 tourSchema.post(/^find/, function (docs, next) {
   console.log(`Query took ${Date.now() - this.start} milliseconds to execute`);
 
   next();
 });
+*/
 
 // AGGREGATION MIDDLEWARE - Runs before/after an aggregation pipeline.
 // NOTE: This middleware was commented out because its aggregation stage runs before the $geoNear stage, used in a route handler to return the distances of all tours' starting locations from a given reference point. The $geoNear stage needs to be the first stage in an aggregation pipeling for it to work:
