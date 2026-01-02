@@ -7,6 +7,7 @@ const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean"); // Deprecated. Use express-xss-sanitizer instead
 const hpp = require("hpp");
 const cookieParser = require("cookie-parser");
+const compression = require("compression");
 
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
@@ -106,6 +107,7 @@ app.use(
   }),
 );
 
+/*
 // Test middleware:
 app.use(function (req, res, next) {
   process.env.NODE_ENV === "development" &&
@@ -117,6 +119,10 @@ app.use(function (req, res, next) {
 
   next();
 });
+*/
+
+// The compression middleware to compress text responses sent to the client:
+app.use(compression());
 
 app.use(function (req, res, next) {
   req.requestTime = new Date().toISOString();
