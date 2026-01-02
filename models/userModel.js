@@ -64,30 +64,25 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
 
   this.password = await bcrypt.hash(this.password, 12);
 
   this.passwordConfirm = undefined;
-
-  next();
 });
 
-userSchema.pre("save", function (next) {
+userSchema.pre("save", async function () {
   // The .isModified("password") method returns true when a new document is created and saved with a new password. But, we dont want to add passwordChangedAt when a new document is saved. So, we use the this.isNew property of the document to check if it's a new document:
-  if (!this.isModified("password") || this.isNew) return next();
+  if (!this.isModified("password") || this.isNew) return;
 
   // IMPORTANT: Saving a document to the DB is usually slower than creating and sending a JWT to the user. So, after a password reset, it is likely that the new passwordChangedAt will be greater than the "iat" property of the new JWT, thus wrongly making the new JWT invalid (expired). So, as a standard practice, we subtract 1 second (1000ms) from the new passwordChangedAt timestamp:
   this.passwordChangedAt = Date.now() - 1000;
-
-  next();
 });
 
-userSchema.pre(/^find/, function (next) {
+userSchema.pre(/^find/, async function () {
   // Since this is a query middleware, "this" points to the current query.
   this.find({ active: { $ne: false } });
-  next();
 });
 
 userSchema.methods.matchPasswords = async function (

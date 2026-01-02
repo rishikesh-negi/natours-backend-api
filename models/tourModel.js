@@ -139,9 +139,8 @@ tourSchema.virtual("reviews", {
 });
 
 // DOCUMENT MIDDLEWARE (pre save hook) - Runs before .save() and .create(), not before .insertMany():
-tourSchema.pre("save", function (next) {
+tourSchema.pre("save", async function () {
   this.slug = slugify(this.name, { lower: true });
-  next();
 });
 
 // Embedding tour guide documents into the tour documnts:
@@ -159,20 +158,17 @@ tourSchema.pre("save", function (next) {
 
 // QUERY MIDDLEWARE (pre find hook) - Runs before a find query is executed:
 // tourSchema.pre("find", function (next) {
-tourSchema.pre(/^find/, function (next) {
+tourSchema.pre(/^find/, async function () {
   this.find({ secretTour: { $ne: true } });
   this.start = Date.now();
-  next();
 });
 
 // Populating the queried tour documents with the guides (User documents):
-tourSchema.pre(/^find/, function (next) {
+tourSchema.pre(/^find/, async function () {
   this.populate({
     path: "guides",
     select: "-__v -passwordChangedAt",
   });
-
-  next();
 });
 
 /*
