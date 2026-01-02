@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
 const dotenv = require("dotenv");
+const mongoose = require("mongoose");
 
 // Handling Uncaught Exceptions Globally (Example: When a Non-existent Variable is Accessed):
 process.on("uncaughtException", function (err) {
