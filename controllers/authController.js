@@ -13,14 +13,14 @@ const signToken = (id) =>
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 
-const createAndSendJWT = function (user, statusCode, res, sendUserData) {
+const createAndSendJWT = function (user, statusCode, req, res, sendUserData) {
   const token = signToken(user._id);
 
   const cookieOptions = {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
     ),
-    ...(process.env.NODE_ENV === "production" && { secure: true }),
+    secure: req.secure || req.headers["x-forwarded-proto"] === "https",
     httpOnly: true,
   };
 
@@ -38,7 +38,7 @@ exports.signup = catchAsync(async function (req, res) {
   const url = `${req.protocol}://${req.get("host")}/me`;
   await new Email(newUser, url).sendWelcome();
 
-  createAndSendJWT(newUser, 201, res, true);
+  createAndSendJWT(newUser, 201, req, res, true);
 });
 
 exports.login = catchAsync(async function (req, res, next) {
@@ -60,7 +60,7 @@ exports.login = catchAsync(async function (req, res, next) {
   if (!user || !passwordMatched) return next(invalidCredentialsError);
 
   // 3) If the credential are correct, send a JWT for login:
-  createAndSendJWT(user, 200, res, false);
+  createAndSendJWT(user, 200, req, res, false);
 });
 
 exports.logout = catchAsync(async function (req, res, next) {
@@ -233,7 +233,7 @@ exports.resetPassword = catchAsync(async function (req, res, next) {
   // A pre-save middleware that updates changedPasswordAt only when the password field is modified takes care of this BTS.
 
   // 4) Log the user in by sending a new JWT:
-  createAndSendJWT(user, 201, res, true);
+  createAndSendJWT(user, 201, req, res, true);
 });
 
 exports.updatePassword = catchAsync(async function (req, res, next) {
@@ -261,5 +261,5 @@ exports.updatePassword = catchAsync(async function (req, res, next) {
   await user.save();
 
   // 4) Log the user in again by sending a new JWT:
-  createAndSendJWT(user, 200, res, false);
+  createAndSendJWT(user, 200, req, res, false);
 });
