@@ -20,6 +20,9 @@ const viewRouter = require("./routes/viewRoutes");
 
 const app = express();
 
+// Trust proxies to allow hosting platforms to modify and redirect requests. Required to allow setting the x-forwarded-proto header and check its value:
+app.enable("trust proxy", 1);
+
 app.set("view engine", "pug");
 
 // Use the "path" module to correctly set the path relative to the root folder of the project by joining the project directory name with the /views folder. The path.join() method correctly creates a path by combining the directory name with a subfolder name, allowing us to not worry about the slashes:
