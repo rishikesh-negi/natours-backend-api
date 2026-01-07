@@ -8,6 +8,7 @@ const xss = require("xss-clean"); // Deprecated. Use express-xss-sanitizer inste
 const hpp = require("hpp");
 const cookieParser = require("cookie-parser");
 const compression = require("compression");
+const cors = require("cors");
 
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
@@ -24,6 +25,14 @@ const app = express();
 app.enable("trust proxy", 1);
 
 app.set("view engine", "pug");
+
+// GLOBAL MIDDLEWARES:
+// Implement CORS:
+app.use(cors());
+
+// OPTIONS is an http method, just like GET, POST, etc., used in a pref-flight phase of a non-simple request. It is NOT used to set any options on the request or response:
+app.options("*", cors());
+// app.options("/api/v1/tours/:id", cors()); // Handling the pre-flight phase for a specific route
 
 // Use the "path" module to correctly set the path relative to the root folder of the project by joining the project directory name with the /views folder. The path.join() method correctly creates a path by combining the directory name with a subfolder name, allowing us to not worry about the slashes:
 app.set("views", path.join(__dirname, "views"));
