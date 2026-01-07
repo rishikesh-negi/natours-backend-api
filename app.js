@@ -18,6 +18,7 @@ const userRouter = require("./routes/userRoutes");
 const reviewRouter = require("./routes/reviewRoutes");
 const bookingRouter = require("./routes/bookingRoutes");
 const viewRouter = require("./routes/viewRoutes");
+const { webhookCheckout } = require("./controllers/bookingController");
 
 const app = express();
 
@@ -90,6 +91,13 @@ const limiter = rateLimit({
     "Too many requests from your IP address. Please try again in an hour.",
 });
 app.use("/api", limiter);
+
+// Route to access data about a completed Stripe checkout session. This endpoint needs to be here because the Stripe data received should be in raw format, and not in JSON. So, it cannot run after the JSON body parser:
+app.post(
+  "/webhook-checkout",
+  express.raw({ type: "application/json" }),
+  webhookCheckout,
+);
 
 // Body parser. Parses the application/json JSON payload from the request body. The "limit" option is used for specifying the maximum amount of data that can be put into a req/res body:
 app.use(express.json({ limit: "10kb" }));
