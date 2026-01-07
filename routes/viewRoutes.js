@@ -10,16 +10,20 @@ const {
 } = require("../controllers/viewController");
 
 const { isLoggedIn, protect } = require("../controllers/authController");
-const { createBookingCheckout } = require("../controllers/bookingController");
+// const { createBookingCheckout } = require("../controllers/bookingController");
 
 const router = express.Router();
 
 // Views (pug template) routes for rendering views:
-router.get("/", createBookingCheckout, isLoggedIn, getOverview);
+router.get("/", isLoggedIn, getOverview);
 router.get("/login", isLoggedIn, getLoginPage);
 router.get("/tour/:slug", isLoggedIn, getTourDetails);
 router.get("/me", protect, getAccount);
-router.get("/my-booked-tours", protect, getMyBookedTours);
+router.get(
+  "/my-booked-tours",
+  /* createBookingCheckout, */ protect,
+  getMyBookedTours,
+);
 
 router.post("/submit-user-data", protect, updateUserData);
 
