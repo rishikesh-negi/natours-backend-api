@@ -4,6 +4,16 @@ const User = require("../models/userModel");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 
+// Middleware to add request-specific variables from the URL query string to the res.locals object to allow views to access that data:
+exports.alert = (req, res, next) => {
+  const { alert } = req.query;
+  if (alert === "booking")
+    res.locals.alert =
+      "Booking successful! Confirmation email sent. Please allow your Natours account some time to reflect your new booking if it hasn't already.";
+
+  next();
+};
+
 exports.getOverview = catchAsync(async (req, res, next) => {
   // 1) Get the data of all tours from the API:
   const tours = await Tour.find();
