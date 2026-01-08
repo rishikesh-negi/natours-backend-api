@@ -77,9 +77,9 @@ async function createBookingCheckout(session) {
     { email: session.customer_email },
     { _id: 1 },
   );
-  const price = session.line_items?.at(0)?.price_data?.unit_amount_decimal;
+  const price = session.amount_total;
 
-  if (tour && user && price)
+  if (tour && user && price && session.status === "complete")
     await Booking.create({ tour, user, price: price / 100 });
 }
 
