@@ -7,7 +7,7 @@ const {
   getAccount,
   updateUserData,
   getMyBookedTours,
-  alerts,
+  alert,
 } = require("../controllers/viewController");
 
 const { isLoggedIn, protect } = require("../controllers/authController");
@@ -16,7 +16,7 @@ const { isLoggedIn, protect } = require("../controllers/authController");
 const router = express.Router();
 
 // Use middleware to add request-specific variables from the URL query string to the res.locals object:
-router.use(alerts);
+router.use(alert);
 
 // Views (pug template) routes for rendering views:
 router.get("/", isLoggedIn, getOverview);
